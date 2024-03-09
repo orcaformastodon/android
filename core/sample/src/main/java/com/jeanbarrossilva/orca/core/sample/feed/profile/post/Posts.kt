@@ -15,7 +15,13 @@
 
 package com.jeanbarrossilva.orca.core.sample.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
+import com.jeanbarrossilva.orca.core.auth.SomeAuthenticationLock
+import com.jeanbarrossilva.orca.core.auth.actor.Actor
 import com.jeanbarrossilva.orca.core.feed.profile.post.Post
+import com.jeanbarrossilva.orca.core.sample.image.SampleImageSource
+import com.jeanbarrossilva.orca.std.image.ImageLoader
+import com.jeanbarrossilva.orca.std.image.SomeImageLoaderProvider
 
 /**
  * [List] of [Post]s that have been added from a [Builder.AdditionScope].
@@ -31,17 +37,40 @@ private constructor(
   /**
    * Configures and builds [Posts].
    *
+   * @param authenticationLock [AuthenticationLock] that will lock authentication-dependent
+   *   functionality behind a "wall".
+   * @param avatarLoaderProvider [ImageLoader.Provider] that provides the [ImageLoader] by which the
+   *   [authenticated][Actor.Authenticated] [Actor]'s avatar will be loaded from a
+   *   [SampleImageSource].
    * @see build
+   * @see Actor.Authenticated.avatarLoader
    */
-  class Builder internal constructor() {
+  class Builder
+  internal constructor(
+    private val authenticationLock: SomeAuthenticationLock,
+    private val avatarLoaderProvider: SomeImageLoaderProvider<SampleImageSource>
+  ) {
     /** [AdditionScope] in which this [Builder] will add [Post]s. */
-    private val additionScope = AdditionScope()
+    private val additionScope = AdditionScope(authenticationLock, avatarLoaderProvider)
 
     /** [List] on top of which [Posts] will be created. */
     private val delegate = mutableListOf<Post>()
 
-    /** Scope in which a [Post] is added. */
-    class AdditionScope internal constructor() {
+    /**
+     * Scope in which a [Post] is added.
+     *
+     * @param authenticationLock [AuthenticationLock] that will lock authentication-dependent
+     *   functionality behind a "wall".
+     * @param avatarLoaderProvider [ImageLoader.Provider] that provides the [ImageLoader] by which
+     *   the avatar of the [authenticated][Actor.Authenticated] [Actor] will be loaded from a
+     *   [SampleImageSource].
+     * @see Actor.Authenticated.avatarLoader
+     */
+    class AdditionScope
+    internal constructor(
+      internal val authenticationLock: SomeAuthenticationLock,
+      internal val avatarLoaderProvider: SomeImageLoaderProvider<SampleImageSource>
+    ) {
       /**
        * [SamplePostWriter.Provider] that provides the [SamplePostWriter] for the [Post] to perform
        * its write operations.
@@ -55,8 +84,8 @@ private constructor(
        * @param posts [Posts] with which the [SamplePostWriter] will be provided.
        */
       internal fun finish(posts: Posts) {
-        val postProvider = SamplePostProvider(posts)
-        val writer = SamplePostWriter(postProvider)
+        val postProvider = SamplePostProvider(authenticationLock, posts)
+        val writer = SamplePostWriter(avatarLoaderProvider, postProvider)
         writerProvider.provide(writer)
       }
     }
@@ -96,7 +125,7 @@ private constructor(
    * @param other [Post] to be added.
    */
   internal operator fun plus(other: Post): Posts {
-    return Posts { addAll { delegate + other } }
+    return only(delegate + other)
   }
 
   /**
@@ -105,7 +134,18 @@ private constructor(
    * @param other [Post] to be removed.
    */
   internal operator fun minus(other: Post): Posts {
-    return Posts { addAll { delegate - other } }
+    return only(delegate - other)
+  }
+
+  /**
+   * Creates [Posts] containing only the given [replacements], discarding the existing ones.
+   *
+   * @param replacements [Post]s to be contained by the resulting [Posts].
+   */
+  private fun only(replacements: List<Post>): Posts {
+    return Posts(additionScope.authenticationLock, additionScope.avatarLoaderProvider) {
+      addAll { replacements }
+    }
   }
 
   companion object

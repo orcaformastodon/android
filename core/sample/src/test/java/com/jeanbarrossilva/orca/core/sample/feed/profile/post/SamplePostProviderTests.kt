@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -15,10 +15,13 @@
 
 package com.jeanbarrossilva.orca.core.sample.feed.profile.post
 
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEmpty
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
 import com.jeanbarrossilva.orca.core.feed.profile.post.DeletablePost
 import com.jeanbarrossilva.orca.core.instance.Instance
+import com.jeanbarrossilva.orca.core.sample.test.auth.sample
 import com.jeanbarrossilva.orca.core.sample.test.feed.profile.post.withSamples
 import com.jeanbarrossilva.orca.core.sample.test.image.TestSampleImageLoader
 import com.jeanbarrossilva.orca.core.sample.test.instance.SampleInstanceTestRule
@@ -37,8 +40,9 @@ internal class SamplePostProviderTests {
   fun getsPostsByTheirIDs() {
     runTest {
       Posts.withSamples.forEach {
-        assertThat(Instance.sample.postProvider.provide(it.id).first())
-          .hasPropertiesEqualToThoseOf(it)
+        Instance.sample.postProvider.provide(it.id).test {
+          assertThat(awaitItem()).hasPropertiesEqualToThoseOf(it)
+        }
       }
     }
   }
@@ -46,7 +50,9 @@ internal class SamplePostProviderTests {
   @Test
   fun doesNotProvidePostWhenItIsDeleted() {
     assertThat(
-        Posts { add { DeletablePost.createSample(TestSampleImageLoader.Provider) } }
+        Posts(AuthenticationLock.sample, TestSampleImageLoader.Provider) {
+            add { DeletablePost.createSample(TestSampleImageLoader.Provider) }
+          }
           .additionScope
           .writerProvider
           .provide()

@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -173,6 +174,7 @@ fun CompositionTextField(
   colors: TextFieldColors = _TextFieldDefaults.colors(),
   placeholder: @Composable () -> Unit = {}
 ) {
+  val softwareKeyboardController = LocalSoftwareKeyboardController.current
   val interactionSource = remember(::MutableInteractionSource)
 
   // TODO: Internalize Form subclasses' constructors in αὐτός.
@@ -201,7 +203,13 @@ fun CompositionTextField(
       onValueChange,
       Modifier.clip(shape).padding(spacing).fillMaxWidth().testTag(TEXT_FIELD_TAG),
       textStyle = style,
-      keyboardActions = KeyboardActions(onSend = { onSend() }),
+      keyboardActions =
+        KeyboardActions(
+          onSend = {
+            softwareKeyboardController?.hide()
+            onSend()
+          }
+        ),
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
       interactionSource = interactionSource,
       cursorBrush = cursorBrush

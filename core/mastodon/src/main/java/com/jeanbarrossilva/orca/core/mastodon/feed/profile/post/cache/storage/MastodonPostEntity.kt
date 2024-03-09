@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -119,7 +119,7 @@ internal data class MastodonPostEntity(
       )
       .`if`<Post>(reposterID != null) {
         val reposter = profileCache.get(reposterID!!).toAuthor()
-        Repost(this, reposter)
+        Repost(this, reposter) { _, _, _, _, _, _, _, _, _ -> this }
       }
   }
 

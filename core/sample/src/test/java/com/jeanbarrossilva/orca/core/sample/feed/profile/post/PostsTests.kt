@@ -18,13 +18,19 @@ package com.jeanbarrossilva.orca.core.sample.feed.profile.post
 import assertk.assertThat
 import assertk.assertions.containsSubList
 import assertk.assertions.isEmpty
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
+import com.jeanbarrossilva.orca.core.sample.test.auth.sample
 import com.jeanbarrossilva.orca.core.sample.test.feed.profile.post.withSample
+import com.jeanbarrossilva.orca.core.sample.test.image.TestSampleImageLoader
 import kotlin.test.Test
 
 internal class PostsTests {
   @Test
   fun adds() {
-    assertThat(Posts() + Posts.withSample.single()).containsSubList(Posts.withSample)
+    assertThat(
+        Posts(AuthenticationLock.sample, TestSampleImageLoader.Provider) + Posts.withSample.single()
+      )
+      .containsSubList(Posts.withSample)
   }
 
   @Test

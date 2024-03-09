@@ -15,11 +15,28 @@
 
 package com.jeanbarrossilva.orca.core.sample.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
+import com.jeanbarrossilva.orca.core.auth.SomeAuthenticationLock
+import com.jeanbarrossilva.orca.core.auth.actor.Actor
+import com.jeanbarrossilva.orca.core.sample.image.SampleImageSource
+import com.jeanbarrossilva.orca.std.image.ImageLoader
+import com.jeanbarrossilva.orca.std.image.SomeImageLoaderProvider
+
 /**
  * Creates [Posts].
  *
+ * @param authenticationLock [AuthenticationLock] that will lock authentication-dependent
+ *   functionality behind a "wall".
+ * @param avatarLoaderProvider [ImageLoader.Provider] that provides the [ImageLoader] by which the
+ *   [authenticated][Actor.Authenticated] [Actor]'s avatar will be loaded from a
+ *   [SampleImageSource].
  * @param build Additional configuration to be performed.
+ * @see Actor.Authenticated.avatarLoader
  */
-fun Posts(build: Posts.Builder.() -> Unit = {}): Posts {
-  return Posts.Builder().apply(build).build()
+fun Posts(
+  authenticationLock: SomeAuthenticationLock,
+  avatarLoaderProvider: SomeImageLoaderProvider<SampleImageSource>,
+  build: Posts.Builder.() -> Unit = {}
+): Posts {
+  return Posts.Builder(authenticationLock, avatarLoaderProvider).apply(build).build()
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -13,21 +13,16 @@
  * not, see https://www.gnu.org/licenses.
  */
 
-package com.jeanbarrossilva.orca.core.sample.auth.actor
+package com.jeanbarrossilva.orca.feature.postdetails.conversion
 
-import com.jeanbarrossilva.orca.core.auth.actor.Actor
-import com.jeanbarrossilva.orca.core.auth.actor.ActorProvider
+import assertk.assertions.containsExactly
+import com.jeanbarrossilva.orca.core.feed.profile.Profile
+import com.jeanbarrossilva.orca.platform.core.sample
+import kotlin.test.Test
 
-/** [ActorProvider] returned by [sample]. */
-private val sampleActorProvider =
-  object : ActorProvider() {
-    override suspend fun remember(actor: Actor) {}
-
-    override suspend fun retrieve(): Actor {
-      return Actor.Authenticated.sample
-    }
+internal class AssertExtensionsTests {
+  @Test
+  fun assertsOnProfileIDs() {
+    assertThatIDsOf(listOf(Profile.sample)).containsExactly(Profile.sample.id)
   }
-
-/** [ActorProvider] that always provides a sample [authenticated][Actor.Authenticated] [Actor]. */
-val ActorProvider.Companion.sample
-  get() = sampleActorProvider
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -15,10 +15,13 @@
 
 package com.jeanbarrossilva.orca.core.mastodon.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.feed.profile.Profile
 import com.jeanbarrossilva.orca.core.feed.profile.post.Author
 import com.jeanbarrossilva.orca.core.feed.profile.post.DeletablePost
 import com.jeanbarrossilva.orca.core.feed.profile.post.Post
 import com.jeanbarrossilva.orca.core.feed.profile.post.content.Content
+import com.jeanbarrossilva.orca.core.feed.profile.post.stat.addable.AddableStat
+import com.jeanbarrossilva.orca.core.feed.profile.post.stat.toggleable.ToggleableStat
 import com.jeanbarrossilva.orca.core.mastodon.feed.profile.post.stat.CommentStat
 import com.jeanbarrossilva.orca.core.mastodon.feed.profile.post.stat.FavoriteStat
 import com.jeanbarrossilva.orca.core.mastodon.feed.profile.post.stat.ReblogStat
@@ -54,5 +57,28 @@ internal constructor(
 
   override fun asDeletable(): DeletablePost {
     return MastodonDeletablePost(this)
+  }
+
+  override fun clone(
+    id: String,
+    author: Author,
+    content: Content,
+    publicationDateTime: ZonedDateTime,
+    comment: AddableStat<Post>,
+    favorite: ToggleableStat<Profile>,
+    repost: ToggleableStat<Profile>,
+    url: URL
+  ): MastodonPost {
+    return copy(
+      id = id,
+      author = author,
+      content = content,
+      imageLoaderProvider = imageLoaderProvider,
+      publicationDateTime = publicationDateTime,
+      commentCount = commentCount,
+      favoriteCount = favoriteCount,
+      reblogCount = reblogCount,
+      url = url
+    )
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -15,12 +15,20 @@
 
 package com.jeanbarrossilva.orca.core.mastodon.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.feed.profile.Profile
+import com.jeanbarrossilva.orca.core.feed.profile.post.Author
 import com.jeanbarrossilva.orca.core.feed.profile.post.DeletablePost
+import com.jeanbarrossilva.orca.core.feed.profile.post.Post
+import com.jeanbarrossilva.orca.core.feed.profile.post.content.Content
+import com.jeanbarrossilva.orca.core.feed.profile.post.stat.addable.AddableStat
+import com.jeanbarrossilva.orca.core.feed.profile.post.stat.toggleable.ToggleableStat
 import com.jeanbarrossilva.orca.core.mastodon.MastodonCoreModule
 import com.jeanbarrossilva.orca.core.mastodon.client.authenticateAndDelete
 import com.jeanbarrossilva.orca.core.mastodon.instance.SomeHttpInstance
 import com.jeanbarrossilva.orca.core.mastodon.instanceProvider
 import com.jeanbarrossilva.orca.std.injector.Injector
+import java.net.URL
+import java.time.ZonedDateTime
 
 /**
  * [DeletablePost] that is deleted by sending a request to the Mastodon API.
@@ -33,5 +41,27 @@ internal data class MastodonDeletablePost(private val delegate: MastodonPost) :
     (Injector.from<MastodonCoreModule>().instanceProvider().provide() as SomeHttpInstance)
       .client
       .authenticateAndDelete("api/v1/statuses/$id")
+  }
+
+  override fun clone(
+    id: String,
+    author: Author,
+    content: Content,
+    publicationDateTime: ZonedDateTime,
+    comment: AddableStat<Post>,
+    favorite: ToggleableStat<Profile>,
+    repost: ToggleableStat<Profile>,
+    url: URL
+  ): Post {
+    return delegate.copy(
+      id = id,
+      author = author,
+      content = content,
+      publicationDateTime = publicationDateTime,
+      commentCount = comment.count,
+      favoriteCount = favorite.count,
+      reblogCount = repost.count,
+      url = url
+    )
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -65,8 +65,10 @@ fun Repost.Companion.createSample(
       },
       publicationDateTime = ZonedDateTime.of(2023, 8, 16, 16, 48, 43, 384, ZoneId.of("GMT-3")),
       url = URL("https://mastodon.social/@_inside/110900315644335855"),
-      writerProvider
+      writerProvider = writerProvider
     ),
     reblogger = Author.createSample(imageLoaderProvider)
-  )
+  ) { _, _, _, _, _, _, _, _, _ ->
+    this
+  }
 }

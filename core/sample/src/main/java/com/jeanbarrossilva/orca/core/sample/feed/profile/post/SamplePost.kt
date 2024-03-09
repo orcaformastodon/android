@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -22,6 +22,7 @@ import com.jeanbarrossilva.orca.core.feed.profile.post.Post
 import com.jeanbarrossilva.orca.core.feed.profile.post.content.Content
 import com.jeanbarrossilva.orca.core.feed.profile.post.stat.addable.AddableStat
 import com.jeanbarrossilva.orca.core.feed.profile.post.stat.toggleable.ToggleableStat
+import com.jeanbarrossilva.orca.core.sample.feed.profile.post.stat.createSampleAddableStat
 import java.net.URL
 import java.time.ZonedDateTime
 
@@ -36,14 +37,36 @@ internal data class SamplePost(
   override val author: Author,
   override val content: Content,
   override val publicationDateTime: ZonedDateTime,
+  override val comment: AddableStat<Post> = createSampleAddableStat(),
+  override val favorite: ToggleableStat<Profile> = ToggleableStat(),
+  override val repost: ToggleableStat<Profile> = ToggleableStat(),
   override val url: URL,
   val writerProvider: SamplePostWriter.Provider
 ) : Post() {
-  override val comment = AddableStat<Post>()
-  override val favorite = ToggleableStat<Profile>()
-  override val repost = ToggleableStat<Profile>()
-
   override fun asDeletable(): DeletablePost {
     return SampleDeletablePost(this)
+  }
+
+  override fun clone(
+    id: String,
+    author: Author,
+    content: Content,
+    publicationDateTime: ZonedDateTime,
+    comment: AddableStat<Post>,
+    favorite: ToggleableStat<Profile>,
+    repost: ToggleableStat<Profile>,
+    url: URL
+  ): Post {
+    return copy(
+      id = id,
+      author = author,
+      content = content,
+      publicationDateTime = publicationDateTime,
+      comment = comment,
+      favorite = favorite,
+      repost = repost,
+      url = url,
+      writerProvider = writerProvider
+    )
   }
 }

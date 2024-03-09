@@ -15,16 +15,24 @@
 
 package com.jeanbarrossilva.orca.core.sample.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
+import com.jeanbarrossilva.orca.core.sample.test.auth.sample
+import com.jeanbarrossilva.orca.core.sample.test.image.TestSampleImageLoader
 import kotlin.test.Test
 
 internal class PostsBuilderAdditionScopeTests {
   @Test(expected = SamplePostWriter.Provider.UnspecifiedWriterException::class)
   fun doesNotProviderPostWriterWhenUnfinished() {
-    Posts.Builder.AdditionScope().writerProvider.provide()
+    Posts.Builder.AdditionScope(AuthenticationLock.sample, TestSampleImageLoader.Provider)
+      .writerProvider
+      .provide()
   }
 
   @Test
   fun providesPostWriterWhenFinished() {
-    Posts.Builder.AdditionScope().apply { finish(Posts()) }.writerProvider.provide()
+    Posts.Builder.AdditionScope(AuthenticationLock.sample, TestSampleImageLoader.Provider)
+      .apply { finish(Posts(AuthenticationLock.sample, TestSampleImageLoader.Provider)) }
+      .writerProvider
+      .provide()
   }
 }

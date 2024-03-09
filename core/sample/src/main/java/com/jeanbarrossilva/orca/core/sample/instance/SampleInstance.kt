@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -24,7 +24,7 @@ import com.jeanbarrossilva.orca.core.feed.profile.search.ProfileSearcher
 import com.jeanbarrossilva.orca.core.instance.Instance
 import com.jeanbarrossilva.orca.core.instance.domain.Domain
 import com.jeanbarrossilva.orca.core.sample.auth.SampleAuthenticator
-import com.jeanbarrossilva.orca.core.sample.auth.sample
+import com.jeanbarrossilva.orca.core.sample.auth.createSample
 import com.jeanbarrossilva.orca.core.sample.feed.SampleFeedProvider
 import com.jeanbarrossilva.orca.core.sample.feed.profile.SampleProfileProvider
 import com.jeanbarrossilva.orca.core.sample.feed.profile.SampleProfileWriter
@@ -41,16 +41,16 @@ import com.jeanbarrossilva.orca.std.image.SomeImageLoaderProvider
  *
  * @param imageLoaderProvider [ImageLoader.Provider] that provides the [ImageLoader] by which images
  *   will be loaded from a [SampleImageSource].
- * @param posts [Post]s that are provided by default by the [postProvider].
+ * @param defaultPosts [Post]s that are provided by default by the [postProvider].
  */
 class SampleInstance
 internal constructor(
+  override val authenticationLock: AuthenticationLock<Authenticator>,
   internal val imageLoaderProvider: SomeImageLoaderProvider<SampleImageSource>,
   private val defaultPosts: Posts
 ) : Instance<Authenticator>() {
   override val domain = Domain.sample
-  override val authenticator: Authenticator = SampleAuthenticator
-  override val authenticationLock = AuthenticationLock.sample
+  override val authenticator: Authenticator = SampleAuthenticator(imageLoaderProvider)
   override val postProvider = postWriter.postProvider
   override val feedProvider: FeedProvider = SampleFeedProvider(imageLoaderProvider, postProvider)
   override val profileProvider: ProfileProvider =
@@ -64,4 +64,9 @@ internal constructor(
   /** [SamplePostWriter] for performing write operations on the [postProvider]. */
   val postWriter
     get() = defaultPosts.additionScope.writerProvider.provide()
+
+  constructor(
+    imageLoaderProvider: SomeImageLoaderProvider<SampleImageSource>,
+    defaultPosts: Posts
+  ) : this(AuthenticationLock.createSample(imageLoaderProvider), imageLoaderProvider, defaultPosts)
 }

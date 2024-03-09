@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -15,16 +15,42 @@
 
 package com.jeanbarrossilva.orca.core.sample.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.auth.actor.Actor
 import com.jeanbarrossilva.orca.core.feed.profile.post.Post
+import com.jeanbarrossilva.orca.core.feed.profile.post.stat.toggleable.ToggleableStat
+import com.jeanbarrossilva.orca.core.sample.feed.profile.post.stat.createSampleAddableStat
+import com.jeanbarrossilva.orca.core.sample.image.SampleImageSource
+import com.jeanbarrossilva.orca.std.image.ImageLoader
+import com.jeanbarrossilva.orca.std.image.SomeImageLoaderProvider
 import kotlinx.coroutines.flow.update
 
 /**
  * Performs [SamplePost]-related writing operations.
  *
+ * @param avatarLoaderProvider [ImageLoader.Provider] that provides the [ImageLoader] by which the
+ *   [authenticated][Actor.Authenticated] [Actor]'s avatar will be loaded from a
+ *   [SampleImageSource].
  * @param postProvider [SamplePostProvider] by which [SamplePost]s will be provided.
+ * @see Actor.Authenticated.avatarLoader
  */
 class SamplePostWriter
-internal constructor(internal val postProvider: SamplePostProvider = SamplePostProvider()) {
+internal constructor(
+  private val avatarLoaderProvider: SomeImageLoaderProvider<SampleImageSource>,
+  internal val postProvider: SamplePostProvider = SamplePostProvider.from(avatarLoaderProvider)
+) {
+  /**
+   * Default [Post]s provided by the [postProvider] ab incunabulis, as they have been provided
+   * originally, without the modifications made to them by this [SamplePostWriter].
+   */
+  private val abIncunabulisPosts =
+    postProvider.defaultPosts.map {
+      it.clone(
+        comment = createSampleAddableStat(it.comment.count),
+        favorite = ToggleableStat(it.favorite.count),
+        repost = ToggleableStat(it.repost.count)
+      )
+    }
+
   /** Provides a [SamplePostWriter] through [provide]. */
   class Provider internal constructor() {
     /** [SamplePostWriter] to be provided. */
@@ -82,6 +108,10 @@ internal constructor(internal val postProvider: SamplePostProvider = SamplePostP
 
   /** Resets this [SamplePostWriter] to its default state. */
   fun reset() {
-    postProvider.postsFlow.update { postProvider.defaultPosts }
+    postProvider.postsFlow.update {
+      Posts(postProvider.getAuthenticationLock(), avatarLoaderProvider) {
+        addAll { abIncunabulisPosts }
+      }
+    }
   }
 }

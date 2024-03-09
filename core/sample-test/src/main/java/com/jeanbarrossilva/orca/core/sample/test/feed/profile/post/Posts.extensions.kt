@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -15,21 +15,25 @@
 
 package com.jeanbarrossilva.orca.core.sample.test.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
 import com.jeanbarrossilva.orca.core.feed.profile.post.Post
 import com.jeanbarrossilva.orca.core.sample.feed.profile.post.Posts
 import com.jeanbarrossilva.orca.core.sample.feed.profile.post.createSample
 import com.jeanbarrossilva.orca.core.sample.feed.profile.post.createSamples
+import com.jeanbarrossilva.orca.core.sample.test.auth.sample
 import com.jeanbarrossilva.orca.core.sample.test.image.TestSampleImageLoader
 
 /** [Posts] returned by [withSample]. */
-private val testPostsWithSample = Posts {
-  add { Post.createSample(TestSampleImageLoader.Provider) }
-}
+private val testPostsWithSample =
+  Posts(AuthenticationLock.sample, TestSampleImageLoader.Provider) {
+    add { Post.createSample(TestSampleImageLoader.Provider) }
+  }
 
 /** [Posts] returned by [withSamples]. */
-private val testPostsWithSamples = Posts {
-  addAll { Post.createSamples(TestSampleImageLoader.Provider) }
-}
+private val testPostsWithSamples =
+  Posts(AuthenticationLock.sample, TestSampleImageLoader.Provider) {
+    addAll { Post.createSamples(TestSampleImageLoader.Provider) }
+  }
 
 /** Test [Posts] with a sample. */
 val Posts.Companion.withSample

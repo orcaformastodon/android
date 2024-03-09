@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -23,8 +23,8 @@ import com.jeanbarrossilva.orca.core.mastodon.client.CoreHttpClient
 import com.jeanbarrossilva.orca.core.mastodon.client.test.instance.TestHttpInstanceProvider
 import com.jeanbarrossilva.orca.core.mastodon.client.test.instance.TestMastodonInstance
 import com.jeanbarrossilva.orca.core.module.CoreModule
-import com.jeanbarrossilva.orca.core.sample.auth.actor.sample
 import com.jeanbarrossilva.orca.core.sample.feed.profile.post.content.SampleTermMuter
+import com.jeanbarrossilva.orca.core.sample.test.auth.actor.sample
 import com.jeanbarrossilva.orca.core.test.TestActorProvider
 import com.jeanbarrossilva.orca.core.test.TestAuthenticator
 import com.jeanbarrossilva.orca.core.test.TestAuthorizer

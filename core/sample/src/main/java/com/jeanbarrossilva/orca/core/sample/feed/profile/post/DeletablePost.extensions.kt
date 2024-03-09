@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -49,8 +49,8 @@ fun DeletablePost.Companion.createSample(
       Author.createSample(imageLoaderProvider),
       Content.sample,
       publicationDateTime = ZonedDateTime.of(2_003, 10, 8, 8, 0, 0, 0, ZoneId.of("GMT-3")),
-      URL("https://mastodon.social/@christianselig/110492858891694580"),
-      writerProvider
+      url = URL("https://mastodon.social/@christianselig/110492858891694580"),
+      writerProvider = writerProvider
     )
   )
 }

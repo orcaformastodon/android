@@ -15,9 +15,11 @@
 
 package com.jeanbarrossilva.orca.core.sample.instance
 
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
 import com.jeanbarrossilva.orca.core.instance.Instance
 import com.jeanbarrossilva.orca.core.instance.InstanceProvider
 import com.jeanbarrossilva.orca.core.instance.SomeInstance
+import com.jeanbarrossilva.orca.core.sample.auth.createSample
 import com.jeanbarrossilva.orca.core.sample.image.SampleImageSource
 import com.jeanbarrossilva.orca.std.image.ImageLoader
 import com.jeanbarrossilva.orca.std.image.SomeImageLoaderProvider
@@ -32,8 +34,10 @@ fun InstanceProvider.Companion.createSample(
   imageLoaderProvider: SomeImageLoaderProvider<SampleImageSource>
 ): InstanceProvider {
   return object : InstanceProvider {
+    private val authenticationLock = AuthenticationLock.createSample(imageLoaderProvider)
+
     override fun provide(): SomeInstance {
-      return Instance.createSample(imageLoaderProvider)
+      return Instance.createSample(authenticationLock, imageLoaderProvider)
     }
   }
 }

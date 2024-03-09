@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -19,7 +19,7 @@ import com.jeanbarrossilva.orca.core.auth.actor.Actor
 import com.jeanbarrossilva.orca.core.feed.profile.account.Account
 import com.jeanbarrossilva.orca.core.feed.profile.account.at
 import com.jeanbarrossilva.orca.core.feed.profile.post.Author
-import com.jeanbarrossilva.orca.core.sample.auth.actor.sample
+import com.jeanbarrossilva.orca.core.sample.auth.actor.createSample
 import com.jeanbarrossilva.orca.core.sample.feed.profile.account.sample
 import com.jeanbarrossilva.orca.core.sample.image.AuthorImageSource
 import com.jeanbarrossilva.orca.core.sample.image.SampleImageSource
@@ -43,13 +43,10 @@ private val ramboSampleAuthorID = UUID.randomUUID().toString()
 fun Author.Companion.createSample(
   avatarLoaderProvider: SomeImageLoaderProvider<SampleImageSource>
 ): Author {
-  return Author(
-    Actor.Authenticated.sample.id,
-    avatarLoaderProvider.provide(AuthorImageSource.Default),
-    name = "Jean Silva",
-    Account.sample,
-    profileURL = URL("https://mastodon.social/@jeanbarrossilva")
-  )
+  val id = Actor.Authenticated.createSample(avatarLoaderProvider).id
+  val avatarLoader = avatarLoaderProvider.provide(AuthorImageSource.Default)
+  val profileURL = URL("https://mastodon.social/@jeanbarrossilva")
+  return Author(id, avatarLoader, name = "Jean Silva", Account.sample, profileURL)
 }
 
 /**

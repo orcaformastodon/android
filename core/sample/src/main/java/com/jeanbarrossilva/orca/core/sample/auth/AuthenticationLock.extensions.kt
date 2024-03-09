@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -17,12 +17,23 @@ package com.jeanbarrossilva.orca.core.sample.auth
 
 import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
 import com.jeanbarrossilva.orca.core.auth.Authenticator
+import com.jeanbarrossilva.orca.core.auth.actor.Actor
 import com.jeanbarrossilva.orca.core.sample.auth.actor.SampleActorProvider
+import com.jeanbarrossilva.orca.core.sample.image.SampleImageSource
+import com.jeanbarrossilva.orca.std.image.ImageLoader
+import com.jeanbarrossilva.orca.std.image.SomeImageLoaderProvider
 
-/** [AuthenticationLock] returned by [sample]. */
-private val sampleAuthenticationLock: AuthenticationLock<Authenticator> =
-  AuthenticationLock(SampleAuthenticator, SampleActorProvider)
-
-/** Sample [AuthenticationLock]. */
-internal val AuthenticationLock.Companion.sample
-  get() = sampleAuthenticationLock
+/**
+ * Creates a sample [AuthenticationLock].
+ *
+ * @param avatarLoaderProvider [ImageLoader.Provider] that provides the [ImageLoader] by which the
+ *   avatar of the [Actor] will be loaded from a [SampleImageSource].
+ * @see Actor.Authenticated.avatarLoader
+ */
+fun AuthenticationLock.Companion.createSample(
+  avatarLoaderProvider: SomeImageLoaderProvider<SampleImageSource>
+): AuthenticationLock<Authenticator> {
+  val actorProvider = SampleActorProvider(avatarLoaderProvider)
+  val authenticator = SampleAuthenticator(avatarLoaderProvider)
+  return AuthenticationLock(authenticator, actorProvider)
+}

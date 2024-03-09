@@ -15,6 +15,7 @@
 
 package com.jeanbarrossilva.orca.platform.core
 
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
 import com.jeanbarrossilva.orca.core.feed.profile.post.Post
 import com.jeanbarrossilva.orca.core.sample.feed.profile.post.Posts
 import com.jeanbarrossilva.orca.core.sample.feed.profile.post.createSample
@@ -23,14 +24,16 @@ import com.jeanbarrossilva.orca.platform.core.image.sample
 import com.jeanbarrossilva.orca.std.image.compose.ComposableImageLoader
 
 /** [Posts] returned by [withSample]. */
-private val postsWithSample = Posts {
-  add { Post.createSample(ComposableImageLoader.Provider.sample) }
-}
+private val postsWithSample =
+  Posts(AuthenticationLock.sample, ComposableImageLoader.Provider.sample) {
+    add { Post.createSample(ComposableImageLoader.Provider.sample) }
+  }
 
 /** [Posts] returned by [withSamples]. */
-private val postsWithSamples = Posts {
-  addAll { Post.createSamples(ComposableImageLoader.Provider.sample) }
-}
+private val postsWithSamples =
+  Posts(AuthenticationLock.sample, ComposableImageLoader.Provider.sample) {
+    addAll { Post.createSamples(ComposableImageLoader.Provider.sample) }
+  }
 
 /** [Posts] whose sample's images are loaded by a sample [ComposableImageLoader]. */
 val Posts.Companion.withSample

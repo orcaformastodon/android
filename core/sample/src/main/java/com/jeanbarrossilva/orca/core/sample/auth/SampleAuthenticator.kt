@@ -18,15 +18,27 @@ package com.jeanbarrossilva.orca.core.sample.auth
 import com.jeanbarrossilva.orca.core.auth.Authenticator
 import com.jeanbarrossilva.orca.core.auth.Authorizer
 import com.jeanbarrossilva.orca.core.auth.actor.Actor
-import com.jeanbarrossilva.orca.core.auth.actor.ActorProvider
-import com.jeanbarrossilva.orca.core.sample.auth.actor.sample
+import com.jeanbarrossilva.orca.core.sample.auth.actor.SampleActorProvider
+import com.jeanbarrossilva.orca.core.sample.auth.actor.createSample
+import com.jeanbarrossilva.orca.core.sample.image.SampleImageSource
+import com.jeanbarrossilva.orca.std.image.ImageLoader
+import com.jeanbarrossilva.orca.std.image.SomeImageLoaderProvider
 
-/** [Authenticator] that provides a sample [Actor]. */
-internal object SampleAuthenticator : Authenticator() {
+/**
+ * [Authenticator] that provides a sample [Actor].
+ *
+ * @param avatarLoaderProvider [ImageLoader.Provider] that provides the [ImageLoader] by which the
+ *   [authenticated][Actor.Authenticated] [Actor]'s avatar will be loaded from a
+ *   [SampleImageSource].
+ * @see Actor.Authenticated.avatarLoader
+ */
+internal class SampleAuthenticator(
+  private val avatarLoaderProvider: SomeImageLoaderProvider<SampleImageSource>
+) : Authenticator() {
   override val authorizer: Authorizer = Authorizer.sample
-  override val actorProvider = ActorProvider.sample
+  override val actorProvider = SampleActorProvider(avatarLoaderProvider)
 
   override suspend fun onAuthenticate(authorizationCode: String): Actor {
-    return Actor.Authenticated.sample
+    return Actor.Authenticated.createSample(avatarLoaderProvider)
   }
 }

@@ -17,15 +17,15 @@ package com.jeanbarrossilva.orca.core.sample.test.auth.actor
 
 import com.jeanbarrossilva.orca.core.auth.actor.Actor
 import com.jeanbarrossilva.orca.core.sample.auth.actor.createSample
-import com.jeanbarrossilva.orca.core.sample.image.AuthorImageSource
 import com.jeanbarrossilva.orca.core.sample.test.image.TestSampleImageLoader
 
 /** [Actor.Authenticated] returned by [Actor.Authenticated.Companion.sample]. */
 internal val testAuthenticatedActorSample =
-  Actor.Authenticated.createSample(
-    TestSampleImageLoader.Provider.provide(AuthorImageSource.Default)
-  )
+  Actor.Authenticated.createSample(TestSampleImageLoader.Provider)
 
-/** Test sample [authenticated][Actor.Authenticated] [Actor]. */
+/**
+ * Sample [authenticated][Actor.Authenticated] [Actor] whose avatar is loaded by a
+ * [TestSampleImageLoader].
+ */
 val Actor.Authenticated.Companion.sample
   get() = testAuthenticatedActorSample

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -55,6 +55,29 @@ abstract class Post : Serializable {
 
   /** Creates a [DeletablePost] from this [Post]. */
   abstract fun asDeletable(): DeletablePost
+
+  /**
+   * Creates a clone of this [Post].
+   *
+   * @param id Unique identifier.
+   * @param author [Author] that has authored this [Post].
+   * @param content [Content] that's been composed by the [author].
+   * @param publicationDateTime Zoned moment in time in which this [Post] was published.
+   * @param comment [Stat] for comments.
+   * @param favorite [Stat] for favorites.
+   * @param repost [Stat] for reposts.
+   * @param url [URL] that leads to this [Post].
+   */
+  abstract fun clone(
+    id: String = this.id,
+    author: Author = this.author,
+    content: Content = this.content,
+    publicationDateTime: ZonedDateTime = this.publicationDateTime,
+    comment: AddableStat<Post> = this.comment,
+    favorite: ToggleableStat<Profile> = this.favorite,
+    repost: ToggleableStat<Profile> = this.repost,
+    url: URL = this.url
+  ): Post
 
   /**
    * Creates a [DeletablePost] from this [Post] if its [author] is identified by the

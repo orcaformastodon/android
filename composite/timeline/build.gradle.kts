@@ -48,6 +48,8 @@ dependencies {
   implementation(libs.loadable.placeholder.test)
   implementation(libs.time4j)
 
+  testImplementation(libs.kotlin.coroutines.test)
   testImplementation(libs.assertk)
   testImplementation(libs.kotlin.test)
+  testImplementation(libs.turbine)
 }

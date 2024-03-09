@@ -15,13 +15,17 @@
 
 package com.jeanbarrossilva.orca.core.sample.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.auth.AuthenticationLock
 import com.jeanbarrossilva.orca.core.feed.profile.post.Post
+import com.jeanbarrossilva.orca.core.sample.test.auth.sample
 import com.jeanbarrossilva.orca.core.sample.test.image.TestSampleImageLoader
 import kotlin.test.Test
 
 internal class PostsExtensionsTests {
   @Test
   fun createsPosts() {
-    Posts { addAll { Post.createSamples(TestSampleImageLoader.Provider) } }
+    Posts(AuthenticationLock.sample, TestSampleImageLoader.Provider) {
+      addAll { Post.createSamples(TestSampleImageLoader.Provider) }
+    }
   }
 }

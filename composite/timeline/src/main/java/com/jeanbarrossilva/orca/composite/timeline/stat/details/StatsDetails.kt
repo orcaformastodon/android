@@ -34,20 +34,23 @@ import com.jeanbarrossilva.orca.platform.core.withSample
 @Immutable
 data class StatsDetails
 internal constructor(
-  private val commentCount: Int,
+  val commentCount: Int,
   val isFavorite: Boolean,
-  private val favoriteCount: Int,
+  val favoriteCount: Int,
   val isReposted: Boolean,
-  private val repostCount: Int
+  val repostCount: Int
 ) {
   /** Formatted, displayable version of [commentCount]. */
-  val formattedCommentCount = commentCount.formatted
+  val formattedCommentCount
+    get() = commentCount.formatted
 
   /** Formatted, displayable version of [favoriteCount]. */
-  val formattedFavoriteCount = favoriteCount.formatted
+  val formattedFavoriteCount
+    get() = favoriteCount.formatted
 
   /** Formatted, displayable version of [repostCount]. */
-  val formattedReblogCount = repostCount.formatted
+  val formattedReblogCount
+    get() = repostCount.formatted
 
   companion object {
     /** [StatsDetails] with zeroed counts. */

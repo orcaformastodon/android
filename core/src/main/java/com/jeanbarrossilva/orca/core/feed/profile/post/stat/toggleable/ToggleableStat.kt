@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -35,31 +35,36 @@ abstract class ToggleableStat<T> internal constructor(count: Int = 0) : Stat<T>(
   val isEnabledFlow = isEnabledMutableFlow.asStateFlow()
 
   /** Whether this [ToggleableStat] is currently enabled. */
-  val isEnabled
+  var isEnabled
     get() = isEnabledFlow.value
+    set(isEnabled) {
+      isEnabledMutableFlow.value = isEnabled
+    }
 
   /** Toggles whether this [ToggleableStat] is enabled. */
   suspend fun toggle() {
-    setEnabled(!isEnabled)
-    isEnabledMutableFlow.value = !isEnabled
-    countMutableFlow.value = if (isEnabled) countFlow.value.inc() else countFlow.value.dec()
+    if (isEnabled) {
+      disable()
+    } else {
+      enable()
+    }
   }
 
   /** Enables this [ToggleableStat]. */
   suspend fun enable() {
     if (!isEnabled) {
+      isEnabled = true
+      count++
       setEnabled(true)
-      isEnabledMutableFlow.value = true
-      countMutableFlow.value++
     }
   }
 
   /** Disables this [ToggleableStat]. */
   suspend fun disable() {
     if (isEnabled) {
+      isEnabled = false
+      count--
       setEnabled(false)
-      isEnabledMutableFlow.value = false
-      countMutableFlow.value--
     }
   }
 

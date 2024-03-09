@@ -33,6 +33,7 @@ class PostDetailsFragment private constructor() : ComposableFragment() {
     viewModels<PostDetailsViewModel> {
       PostDetailsViewModel.createFactory(
         application,
+        module.authenticationLock(),
         module.postProvider(),
         id,
         onLinkClick = module.boundary()::navigateTo,

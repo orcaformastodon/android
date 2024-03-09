@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * @param listener [OnBottomAreaAvailabilityChangeListener] to be notified.
  */
 class BottomAreaAvailabilityNestedScrollConnection
-internal constructor(private val listener: OnBottomAreaAvailabilityChangeListener) :
+internal constructor(val listener: OnBottomAreaAvailabilityChangeListener) :
   NestedScrollConnection {
   /** [MutableStateFlow] to which the current Y offset of the bottom area is emitted. */
   private var yOffsetFlow = MutableStateFlow(0f)

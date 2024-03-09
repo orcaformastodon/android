@@ -16,6 +16,7 @@
 
 <resources>
     <string name="feature_post_details">Publicação</string>
+    <string name="feature_post_details_comment">Comentar…</string>
     <string name="feature_post_details_comments">Comentários</string>
     <string name="feature_post_details_share">Compartilhar</string>
 </resources>

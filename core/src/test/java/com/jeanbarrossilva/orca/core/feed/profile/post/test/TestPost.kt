@@ -42,6 +42,19 @@ internal class TestPost(
     return delegate.asDeletable()
   }
 
+  override fun clone(
+    id: String,
+    author: Author,
+    content: Content,
+    publicationDateTime: ZonedDateTime,
+    comment: AddableStat<Post>,
+    favorite: ToggleableStat<Profile>,
+    repost: ToggleableStat<Profile>,
+    url: URL
+  ): Post {
+    return TestPost(id, author, content, publicationDateTime, comment, favorite, repost, url)
+  }
+
   companion object {
     /** [Post] to which a [TestPost]'s functionality is delegated. */
     private val delegate = Posts.withSample.single()

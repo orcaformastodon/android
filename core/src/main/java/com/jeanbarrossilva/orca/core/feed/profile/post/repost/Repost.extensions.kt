@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -31,8 +31,24 @@ import java.time.ZonedDateTime
  *
  * @param original [Post] from which the [Repost] derives.
  * @param reblogger [Author] by which the [Post] has been reblogged.
+ * @param clone Creates a clone of this [Repost].
  */
-fun Repost(original: Post, reblogger: Author): Repost {
+fun Repost(
+  original: Post,
+  reblogger: Author,
+  clone:
+    Repost.(
+      id: String,
+      Author,
+      reposter: Author,
+      Content,
+      publicationDateTime: ZonedDateTime,
+      comment: AddableStat<Post>,
+      favorite: ToggleableStat<Profile>,
+      repost: ToggleableStat<Profile>,
+      URL
+    ) -> Repost
+): Repost {
   return Repost(
     original.id,
     original.author,
@@ -42,10 +58,10 @@ fun Repost(original: Post, reblogger: Author): Repost {
     original.comment,
     original.favorite,
     original.repost,
-    original.url
-  ) {
-    original.asDeletable()
-  }
+    original.url,
+    asDeletable = { original.asDeletable() },
+    clone
+  )
 }
 
 /**
@@ -61,6 +77,7 @@ fun Repost(original: Post, reblogger: Author): Repost {
  * @param reblog [Stat] for the [Post]'s reblogs.
  * @param url [URL] that leads to the [Post].
  * @param asDeletable Creates a [DeletablePost] from this [Repost].
+ * @param clone Creates a clone of this [Repost].
  */
 fun Repost(
   id: String,
@@ -72,7 +89,19 @@ fun Repost(
   favorite: ToggleableStat<Profile>,
   reblog: ToggleableStat<Profile>,
   url: URL,
-  asDeletable: (Repost) -> DeletablePost
+  asDeletable: Repost.() -> DeletablePost,
+  clone:
+    Repost.(
+      id: String,
+      Author,
+      reposter: Author,
+      Content,
+      publicationDateTime: ZonedDateTime,
+      comment: AddableStat<Post>,
+      favorite: ToggleableStat<Profile>,
+      repost: ToggleableStat<Profile>,
+      URL
+    ) -> Repost
 ): Repost {
   return object : Repost() {
     override val id = id
@@ -87,6 +116,31 @@ fun Repost(
 
     override fun asDeletable(): DeletablePost {
       return asDeletable(this)
+    }
+
+    override fun clone(
+      id: String,
+      author: Author,
+      reposter: Author,
+      content: Content,
+      publicationDateTime: ZonedDateTime,
+      comment: AddableStat<Post>,
+      favorite: ToggleableStat<Profile>,
+      repost: ToggleableStat<Profile>,
+      url: URL
+    ): Repost {
+      return clone(
+        this,
+        id,
+        author,
+        reposter,
+        content,
+        publicationDateTime,
+        comment,
+        favorite,
+        repost,
+        url
+      )
     }
   }
 }

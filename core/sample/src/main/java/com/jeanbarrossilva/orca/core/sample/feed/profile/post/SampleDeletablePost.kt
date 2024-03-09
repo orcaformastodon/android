@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 Orca
+ * Copyright © 2023-2024 Orca
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
@@ -15,7 +15,15 @@
 
 package com.jeanbarrossilva.orca.core.sample.feed.profile.post
 
+import com.jeanbarrossilva.orca.core.feed.profile.Profile
+import com.jeanbarrossilva.orca.core.feed.profile.post.Author
 import com.jeanbarrossilva.orca.core.feed.profile.post.DeletablePost
+import com.jeanbarrossilva.orca.core.feed.profile.post.Post
+import com.jeanbarrossilva.orca.core.feed.profile.post.content.Content
+import com.jeanbarrossilva.orca.core.feed.profile.post.stat.addable.AddableStat
+import com.jeanbarrossilva.orca.core.feed.profile.post.stat.toggleable.ToggleableStat
+import java.net.URL
+import java.time.ZonedDateTime
 
 /**
  * [DeletablePost] whose deletion is performed by the [writer].
@@ -27,5 +35,18 @@ internal data class SampleDeletablePost(private val delegate: SamplePost) :
   DeletablePost(delegate) {
   override suspend fun delete() {
     delegate.writerProvider.provide().delete(id)
+  }
+
+  override fun clone(
+    id: String,
+    author: Author,
+    content: Content,
+    publicationDateTime: ZonedDateTime,
+    comment: AddableStat<Post>,
+    favorite: ToggleableStat<Profile>,
+    repost: ToggleableStat<Profile>,
+    url: URL
+  ): Post {
+    return delegate.clone(id, author, content, publicationDateTime, comment, favorite, repost, url)
   }
 }
